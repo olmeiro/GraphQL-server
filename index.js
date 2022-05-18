@@ -82,12 +82,15 @@ const typeDefinitions = gql`
 const resolvers = {
   Query: {
     personCount: () => persons.length,
-    allPersons: (root, args) => {
-      if(!args.phone) return persons;
+    allPersons: async(root, args) => {
+      const {data: personsFromRestApi } = await axios.get('http://localhost:3000/persons');
+      // console.log(personsFromRestApi);
+      // if(!args.phone) return persons;
+      if(!args.phone) return personsFromRestApi;
       // return persons  
       //   .filter(person => args.phone === 'YES' ? person.phone : !person.phone);
       const byPhone = person => args.phone === 'YES' ? person.phone : !person.phone;
-      return persons.filter(byPhone);
+      return personsFromRestApi.filter(byPhone);
     },
     findPerson: (root, args) => {
       const { name } = args;
